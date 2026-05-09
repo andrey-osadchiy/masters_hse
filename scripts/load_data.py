@@ -57,7 +57,7 @@ def apply_schema(engine):
                 log.info(f"  migration ok: {label}")
             except Exception:
                 pass
-    log.info("✅ Схема готова")
+    log.info("Схема готова")
 
 # ── 2. Ледовые данные NSIDC Sea Ice Index v4 ─────────────────────────────────
 # Источник: National Snow and Ice Data Center (NSIDC)
@@ -144,7 +144,7 @@ def load_ice(engine):
                    'anomaly': None if pd.isna(row.anomaly_mkm2) else float(row.anomaly_mkm2),
                    'source': row.source})
 
-    log.info(f"✅ Ледовые данные: {len(df_all)} записей")
+    log.info(f"Ледовые данные: {len(df_all)} записей")
 
 # ── 3. Грузоперевозки по СМП ─────────────────────────────────────────────────
 # Источники (верифицированы, см. README.md):
@@ -249,7 +249,7 @@ def load_routes(engine):
                      'VesselFinder Route Calculator + GCMap, 2024')
             """), {'route': route, 'origin': origin, 'dest': dest,
                    'dist': dist, 'eca': eca, 'days': days})
-    log.info(f"✅ Маршруты: {len(ROUTES)} записей")
+    log.info(f" Маршруты: {len(ROUTES)} записей")
 
 # ── Main ─────────────────────────────────────────────────────────────────────
 
@@ -263,7 +263,5 @@ def main():
     load_shipping(engine)
     log.info("─── Загрузка маршрутов ───")
     load_routes(engine)
-    log.info("✅ Все данные загружены. Следующий шаг: python scripts/compute_metrics.py")
-
 if __name__ == "__main__":
     main()
