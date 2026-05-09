@@ -223,7 +223,7 @@ def calculate_and_store(engine) -> pd.DataFrame:
                 'nsr':   float(row.nsr_potential),
             })
 
-    log.info("✅ NSRPotential записан в nsr_metrics")
+    log.info("NSRPotential записан в nsr_metrics")
     return result
 
 
