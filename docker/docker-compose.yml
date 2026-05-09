@@ -1,0 +1,56 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: nsr_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: nsr_user
+      POSTGRES_PASSWORD: nsr_pass
+      POSTGRES_DB: nsr_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nsr_user -d nsr_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  superset:
+    image: apache/superset:3.1.0
+    container_name: nsr_superset
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SUPERSET_SECRET_KEY: "nsr_superset_secret_key_change_in_prod"
+    ports:
+      - "8088:8088"
+    volumes:
+      - superset_home:/app/superset_home
+      - ./superset_init.sh:/superset_init.sh
+    command: ["/bin/bash", "/superset_init.sh"]
+
+  jupyter:
+    image: jupyter/scipy-notebook:latest
+    container_name: nsr_jupyter
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+      JUPYTER_TOKEN: "nsr_token"
+    ports:
+      - "8888:8888"
+    volumes:
+      - ../notebooks:/home/jovyan/work/notebooks
+      - ../data:/home/jovyan/work/data
+      - ../scripts:/home/jovyan/work/scripts
+
+volumes:
+  postgres_data:
+  superset_home:
